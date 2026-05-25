@@ -55,6 +55,21 @@ class _AdminUploadPdfScreenState extends State<AdminUploadPdfScreen> {
         'access_type': 'all',
       });
 
+      // 3. Send Push Notification via Edge Function
+      try {
+        await SupabaseService.instance.client.functions.invoke(
+          'send-notification',
+          body: {
+            'title': 'Dokumen Baru 📄',
+            'body': _titleController.text,
+            'target': 'all',
+            'notification_type': 'document'
+          },
+        );
+      } catch (e) {
+        debugPrint('Failed to trigger notification: $e');
+      }
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Upload successful!')));
         Navigator.pop(context);
