@@ -63,23 +63,36 @@ class CreatorScreen extends ConsumerWidget {
                 const SizedBox(height: 16),
                 Wrap(
                   spacing: 16,
-                  children: creator.links.map((linkData) {
-                    final platform = linkData['platform'] ?? 'Link';
-                    final url = linkData['url'] ?? '';
-                    IconData icon = Icons.link;
-                    
-                    if (platform.toString().toLowerCase().contains('instagram')) icon = Icons.camera_alt;
-                    if (platform.toString().toLowerCase().contains('tiktok')) icon = Icons.music_note;
-                    if (platform.toString().toLowerCase().contains('twitter') || platform.toString().toLowerCase().contains('x')) icon = Icons.flutter_dash;
-                    if (platform.toString().toLowerCase().contains('telegram')) icon = Icons.send;
-
-                    return IconButton(
-                      icon: Icon(icon, color: AppColors.accentBlue),
-                      iconSize: 32,
-                      onPressed: () => _launchUrl(url),
-                      tooltip: platform,
-                    );
-                  }).toList(),
+                  children: [
+                    if (creator.instagramUrl != null && creator.instagramUrl!.isNotEmpty)
+                      IconButton(
+                        icon: const Icon(Icons.camera_alt, color: AppColors.accentBlue),
+                        iconSize: 32,
+                        onPressed: () => _launchUrl(creator.instagramUrl!),
+                        tooltip: 'Instagram',
+                      ),
+                    if (creator.tiktokUrl != null && creator.tiktokUrl!.isNotEmpty)
+                      IconButton(
+                        icon: const Icon(Icons.music_note, color: AppColors.accentBlue),
+                        iconSize: 32,
+                        onPressed: () => _launchUrl(creator.tiktokUrl!),
+                        tooltip: 'TikTok',
+                      ),
+                    if (creator.twitterUrl != null && creator.twitterUrl!.isNotEmpty)
+                      IconButton(
+                        icon: const Icon(Icons.flutter_dash, color: AppColors.accentBlue),
+                        iconSize: 32,
+                        onPressed: () => _launchUrl(creator.twitterUrl!),
+                        tooltip: 'Twitter/X',
+                      ),
+                    if (creator.telegramUrl != null && creator.telegramUrl!.isNotEmpty)
+                      IconButton(
+                        icon: const Icon(Icons.send, color: AppColors.accentBlue),
+                        iconSize: 32,
+                        onPressed: () => _launchUrl(creator.telegramUrl!),
+                        tooltip: 'Telegram',
+                      ),
+                  ],
                 )
               ],
             ),

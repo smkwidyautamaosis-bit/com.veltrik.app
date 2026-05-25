@@ -6,14 +6,20 @@ class CreatorProfile {
   final String name;
   final String? bio;
   final String? photoUrl;
-  final List<dynamic> links;
+  final String? instagramUrl;
+  final String? telegramUrl;
+  final String? tiktokUrl;
+  final String? twitterUrl;
 
   CreatorProfile({
     required this.id,
     required this.name,
     this.bio,
     this.photoUrl,
-    required this.links,
+    this.instagramUrl,
+    this.telegramUrl,
+    this.tiktokUrl,
+    this.twitterUrl,
   });
 
   factory CreatorProfile.fromJson(Map<String, dynamic> json) {
@@ -22,7 +28,10 @@ class CreatorProfile {
       name: json['name'] as String? ?? '',
       bio: json['bio'] as String?,
       photoUrl: json['photo_url'] as String?,
-      links: json['links'] as List<dynamic>? ?? [],
+      instagramUrl: json['instagram_url'] as String?,
+      telegramUrl: json['telegram_url'] as String?,
+      tiktokUrl: json['tiktok_url'] as String?,
+      twitterUrl: json['twitter_url'] as String?,
     );
   }
 }

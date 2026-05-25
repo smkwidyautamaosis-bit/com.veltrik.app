@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import '../../app/router.dart';
+import 'supabase_service.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -59,9 +60,40 @@ class NotificationService {
       });
     }
 
-    // Generate token (Optional: send to Supabase to target specific devices)
+    // Generate token
+    await fetchAndSaveToken();
+
+    // Listen to token refreshes
+    _fcm.onTokenRefresh.listen((newToken) {
+      debugPrint('FCM Token Refreshed: $newToken');
+      _saveTokenToSupabase(newToken);
+    });
+  }
+
+  Future<void> fetchAndSaveToken({String? userId}) async {
     String? token = await _fcm.getToken();
     debugPrint('FCM Token: $token');
+    
+    if (token != null) {
+      await _saveTokenToSupabase(token, userId: userId);
+    }
+  }
+
+  Future<void> _saveTokenToSupabase(String token, {String? userId}) async {
+    final targetUserId = userId ?? SupabaseService.instance.client.auth.currentUser?.id;
+    if (targetUserId != null) {
+      try {
+        await SupabaseService.instance.client
+            .from('users')
+            .update({'fcm_token': token})
+            .eq('id', targetUserId);
+        debugPrint('FCM Token successfully saved to Supabase users table for user $targetUserId.');
+      } catch (e) {
+        debugPrint('Failed to save FCM Token to Supabase: $e');
+      }
+    } else {
+      debugPrint('Skipping FCM token save: No user is currently logged in.');
+    }
   }
 
   void _navigateToUpdates() {

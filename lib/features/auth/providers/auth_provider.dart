@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/services/auth_service.dart';
+import '../../../core/services/notification_service.dart';
 import '../models/session_model.dart';
 
 enum AuthStatus { initial, loading, authenticated, unauthenticated }
@@ -42,6 +43,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
       if (onFirstLogin != null) {
         onFirstLogin(result['is_first_login'] == true);
       }
+      
+      // Sync FCM token now that user is logged in
+      final currentUser = AuthService.instance.currentUser;
+      if (currentUser != null) {
+        await NotificationService.instance.fetchAndSaveToken(userId: currentUser.id);
+      }
+      
       return true;
     } else {
       state = state.copyWith(status: AuthStatus.unauthenticated, error: result['message']);

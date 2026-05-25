@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../core/services/notification_service.dart';
 import '../providers/auth_provider.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -57,8 +58,12 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     debugPrint('Splash: Current auth status: ${authState.status}');
 
     if (mounted) {
-      if (authState.status == AuthStatus.authenticated) {
-        debugPrint('Splash: Authenticated, redirecting to /app/library');
+      if (authState.status == AuthStatus.authenticated && authState.user != null) {
+        debugPrint('Splash: Authenticated, fetching FCM token in background...');
+        // Do not await this so we don't delay the redirect
+        NotificationService.instance.fetchAndSaveToken(userId: authState.user!.id);
+        
+        debugPrint('Splash: Redirecting to /app/library');
         context.go('/app/library');
       } else {
         debugPrint('Splash: Unauthenticated or Error, redirecting to /login');
