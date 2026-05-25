@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "927716536503",
+    "project_id": "veltrik-vinal-version",
+    "storage_bucket": "veltrik-vinal-version.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:927716536503:android:c5e6e3083372d7963a1d32",
+        "android_client_info": {
+          "package_name": "com.veltrik.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6SJJFmXCHinWu347xDFhT57RjkW4e_30"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
