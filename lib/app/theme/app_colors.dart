@@ -26,4 +26,7 @@ class AppColors {
   // Borders
   static const border = Color(0xFF1F2937); // Dark border
   static const borderLight = Color(0xFF374151); // Light border
+
+  // Shapes
+  static const shapeAccent = Color(0x143B82F6); // Electric Blue 8% opacity
 }

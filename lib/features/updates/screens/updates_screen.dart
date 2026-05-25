@@ -54,23 +54,44 @@ class UpdatesScreen extends ConsumerWidget {
               final notif = notifs[index];
               final dateStr = DateFormat('dd MMM yyyy, HH:mm').format(notif.createdAt);
 
-              return ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                tileColor: notif.isRead ? Colors.transparent : AppColors.bgElevated.withValues(alpha: 0.5),
-                leading: CircleAvatar(
-                  backgroundColor: AppColors.bgElevated,
-                  child: Icon(_getIcon(notif.notificationType), color: _getIconColor(notif.notificationType)),
+              return Container(
+                margin: const EdgeInsets.only(bottom: 12, left: 16, right: 16),
+                decoration: BoxDecoration(
+                  color: notif.isRead ? AppColors.bgCard : AppColors.bgElevated,
+                  borderRadius: BorderRadius.circular(16),
+                  border: notif.isRead ? null : Border.all(color: AppColors.accentBlue.withValues(alpha: 0.3)),
+                  boxShadow: notif.isRead ? null : [
+                    BoxShadow(color: AppColors.accentBlue.withValues(alpha: 0.1), blurRadius: 8, offset: const Offset(0, 4))
+                  ]
                 ),
-                title: Text(notif.title, style: AppTextStyles.bodyEmphasis),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 4),
-                    Text(notif.body, style: AppTextStyles.bodyRegular, maxLines: 2, overflow: TextOverflow.ellipsis),
-                    const SizedBox(height: 4),
-                    Text(dateStr, style: AppTextStyles.caption),
-                  ],
-                ),
+                child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  leading: CircleAvatar(
+                    backgroundColor: notif.isRead ? AppColors.bgPrimary : _getIconColor(notif.notificationType).withValues(alpha: 0.2),
+                    child: Icon(_getIcon(notif.notificationType), color: notif.isRead ? AppColors.textMuted : _getIconColor(notif.notificationType)),
+                  ),
+                  title: Text(
+                    notif.title, 
+                    style: AppTextStyles.bodyEmphasis.copyWith(
+                      color: notif.isRead ? AppColors.textSecond : AppColors.textPrimary,
+                    )
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 6),
+                      Text(
+                        notif.body, 
+                        style: AppTextStyles.bodyRegular.copyWith(
+                          color: notif.isRead ? AppColors.textMuted : AppColors.textSecond,
+                        ),
+                        maxLines: 2, 
+                        overflow: TextOverflow.ellipsis
+                      ),
+                      const SizedBox(height: 8),
+                      Text(dateStr, style: AppTextStyles.caption.copyWith(color: AppColors.textMuted)),
+                    ],
+                  ),
                 onTap: () {
                   if (!notif.isRead) {
                     ref.read(notificationsProvider.notifier).markAsRead(notif.id);
@@ -91,8 +112,9 @@ class UpdatesScreen extends ConsumerWidget {
                     ),
                   );
                 },
-              );
-            },
+              ),
+            );
+          },
           );
         },
         loading: () => ListView.builder(
