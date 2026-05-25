@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/services/supabase_service.dart';
 import '../../../app/theme/app_colors.dart';
 
@@ -20,6 +22,7 @@ class _AdminCreatorEditorScreenState extends State<AdminCreatorEditorScreen> {
   final _twitterController = TextEditingController();
   
   bool _isLoading = true;
+  bool _isUploadingPhoto = false;
   String? _id;
 
   @override
@@ -55,6 +58,45 @@ class _AdminCreatorEditorScreenState extends State<AdminCreatorEditorScreen> {
       if (mounted) {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
+    }
+  }
+
+  Future<void> _pickAndUploadImage() async {
+    try {
+      final picker = ImagePicker();
+      final image = await picker.pickImage(source: ImageSource.gallery);
+      if (image == null) return;
+
+      setState(() => _isUploadingPhoto = true);
+      
+      final bytes = await image.readAsBytes();
+      final ext = image.name.split('.').last;
+      final fileName = 'creator_profile_${DateTime.now().millisecondsSinceEpoch}.$ext';
+      
+      await SupabaseService.instance.client.storage
+          .from('veltrik-thumbnails')
+          .uploadBinary(
+            fileName, 
+            bytes,
+            fileOptions: FileOptions(contentType: 'image/$ext', upsert: true),
+          );
+          
+      final publicUrl = SupabaseService.instance.client.storage
+          .from('veltrik-thumbnails')
+          .getPublicUrl(fileName);
+          
+      if (mounted) {
+        setState(() {
+          _photoUrlController.text = publicUrl;
+          _isUploadingPhoto = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Photo uploaded successfully!')));
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isUploadingPhoto = false);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error uploading photo: $e')));
       }
     }
   }
@@ -107,15 +149,33 @@ class _AdminCreatorEditorScreenState extends State<AdminCreatorEditorScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Center(
-                    child: CircleAvatar(
-                      radius: 60,
-                      backgroundColor: AppColors.bgElevated,
-                      backgroundImage: _photoUrlController.text.isNotEmpty
-                          ? CachedNetworkImageProvider(_photoUrlController.text)
-                          : null,
-                      child: _photoUrlController.text.isEmpty
-                          ? const Icon(Icons.person, size: 60, color: AppColors.textMuted)
-                          : null,
+                    child: GestureDetector(
+                      onTap: _isUploadingPhoto ? null : _pickAndUploadImage,
+                      child: Stack(
+                        alignment: Alignment.bottomRight,
+                        children: [
+                          CircleAvatar(
+                            radius: 60,
+                            backgroundColor: AppColors.bgElevated,
+                            backgroundImage: _photoUrlController.text.isNotEmpty
+                                ? CachedNetworkImageProvider(_photoUrlController.text)
+                                : null,
+                            child: _photoUrlController.text.isEmpty
+                                ? const Icon(Icons.person, size: 60, color: AppColors.textMuted)
+                                : null,
+                          ),
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: const BoxDecoration(
+                              color: AppColors.accentBlue,
+                              shape: BoxShape.circle,
+                            ),
+                            child: _isUploadingPhoto 
+                                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                                : const Icon(Icons.camera_alt, color: Colors.white, size: 20),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -140,15 +200,17 @@ class _AdminCreatorEditorScreenState extends State<AdminCreatorEditorScreen> {
                     )
                   ),
                   const SizedBox(height: 16),
-                  TextField(
-                    controller: _photoUrlController, 
-                    decoration: InputDecoration(
-                      labelText: 'Photo URL',
-                      filled: true,
-                      fillColor: AppColors.bgElevated,
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                      backgroundColor: AppColors.bgElevated,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
-                    onChanged: (val) => setState(() {}),
+                    onPressed: _isUploadingPhoto ? null : _pickAndUploadImage,
+                    icon: _isUploadingPhoto 
+                        ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                        : const Icon(Icons.upload, color: AppColors.accentBlue),
+                    label: const Text('Upload Photo from Gallery', style: TextStyle(color: AppColors.accentBlue)),
                   ),
                   const SizedBox(height: 32),
                   const Text('Social Links', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),

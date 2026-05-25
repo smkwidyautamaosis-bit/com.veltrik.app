@@ -115,15 +115,14 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                                       highlightColor: AppColors.borderLight,
                                       child: Container(color: Colors.white),
                                     ),
-                                    errorWidget: (context, url, error) => Center(
-                                      child: Image.asset('assets/images/logo.png', width: 80, height: 80, fit: BoxFit.contain),
+                                    errorWidget: (context, url, error) => Container(
+                                      color: AppColors.bgPrimary,
+                                      child: Image.asset('assets/images/placeholder.png', width: double.infinity, height: double.infinity, fit: BoxFit.cover),
                                     ),
                                   )
                                 : Container(
                                     color: AppColors.bgPrimary, 
-                                    child: Center(
-                                      child: Image.asset('assets/images/logo.png', width: 80, height: 80, fit: BoxFit.contain),
-                                    ),
+                                    child: Image.asset('assets/images/placeholder.png', width: double.infinity, height: double.infinity, fit: BoxFit.cover),
                                   ),
                           ),
                           Positioned.fill(
