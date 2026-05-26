@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../core/services/supabase_service.dart';
 
@@ -108,14 +109,14 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: AppColors.bgSurface,
       appBar: AppBar(
-        title: const Text('Manage Users'),
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.bgPrimary,
         elevation: 0,
+        title: Text('Manage Users', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
         actions: [
           IconButton(
-            icon: const Icon(Icons.add, color: AppColors.accentBlue), 
+            icon: const Icon(Icons.person_add_rounded, color: AppColors.accentBlue), 
             onPressed: () => context.push('/admin/users/create').then((_) => _fetchUsers())
           ),
         ],
@@ -130,34 +131,38 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                 final expiresAt = user['expires_at'] != null ? DateTime.tryParse(user['expires_at']) : null;
                 final dateStr = expiresAt != null ? "${expiresAt.day}/${expiresAt.month}/${expiresAt.year}" : 'No Expiry';
                 
-                return Card(
+                return Container(
                   margin: const EdgeInsets.only(bottom: 12),
-                  color: AppColors.bgElevated,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  decoration: BoxDecoration(
+                    color: AppColors.bgCard,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AppColors.border),
+                    boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2))],
+                  ),
                   child: Padding(
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(14),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         CircleAvatar(
-                          backgroundColor: AppColors.bgPrimary,
-                          child: Icon(Icons.person, color: AppColors.accentBlue),
+                          backgroundColor: AppColors.accentBlue.withValues(alpha: 0.1),
+                          child: const Icon(Icons.person_rounded, color: AppColors.accentBlue),
                         ),
-                        const SizedBox(width: 16),
+                        const SizedBox(width: 12),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
                                 children: [
-                                  Expanded(child: Text(user['full_name'] ?? 'Unknown', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16))),
+                                  Expanded(child: Text(user['full_name'] ?? 'Unknown', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 15, color: AppColors.textPrimary))),
                                   _buildBadge(user['status'] ?? 'inactive', expiresAt),
                                 ],
                               ),
-                              const SizedBox(height: 8),
-                              Text('${user['invite_code'] ?? 'No Code'} • $dateStr', style: const TextStyle(color: AppColors.textSecond, fontSize: 13)),
-                              const SizedBox(height: 4),
-                              Text('Device: ${user['device_name'] ?? 'Unbound'}', style: const TextStyle(color: AppColors.textMuted, fontSize: 12)),
+                              const SizedBox(height: 6),
+                              Text('${user['invite_code'] ?? 'No Code'} • $dateStr', style: GoogleFonts.plusJakartaSans(color: AppColors.textSecond, fontSize: 12)),
+                              const SizedBox(height: 2),
+                              Text('Device: ${user['device_name'] ?? 'Unbound'}', style: GoogleFonts.plusJakartaSans(color: AppColors.textMuted, fontSize: 11)),
                             ],
                           ),
                         ),
@@ -165,17 +170,17 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                           children: [
                             IconButton(
                               icon: Icon(
-                                user['status'] == 'active' ? Icons.block : Icons.check_circle_outline,
+                                user['status'] == 'active' ? Icons.block_rounded : Icons.check_circle_outline_rounded,
                                 color: user['status'] == 'active' ? AppColors.danger : AppColors.success,
                               ),
                               onPressed: () => _toggleStatus(user['id'], user['status'] ?? 'inactive'),
-                              tooltip: user['status'] == 'active' ? 'Deactivate User' : 'Activate User',
+                              tooltip: user['status'] == 'active' ? 'Nonaktifkan' : 'Aktifkan',
                             ),
                             if (user['device_id'] != null)
                               IconButton(
-                                icon: const Icon(Icons.phonelink_erase, color: AppColors.warning),
+                                icon: const Icon(Icons.phonelink_erase_rounded, color: AppColors.warning),
                                 onPressed: () => _resetDevice(user['id']),
-                                tooltip: 'Reset Device Binding',
+                                tooltip: 'Reset Device',
                               ),
                           ],
                         ),

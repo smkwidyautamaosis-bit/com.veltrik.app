@@ -34,73 +34,73 @@ class ScaffoldWithNavBar extends StatelessWidget {
     final currentIndex = _calculateSelectedIndex(context);
 
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: AppColors.bgSurface,
       body: child,
-      extendBody: true,
-      bottomNavigationBar: SafeArea(
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-          margin: const EdgeInsets.only(left: 24, right: 24, bottom: 16),
-          decoration: BoxDecoration(
-            color: AppColors.bgElevated,
-            borderRadius: BorderRadius.circular(32),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.3),
-                blurRadius: 16,
-                offset: const Offset(0, 8),
-              ),
-            ],
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          color: AppColors.bgPrimary,
+          border: Border(
+            top: BorderSide(color: AppColors.border, width: 1),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(0, Icons.my_library_books, Icons.my_library_books_outlined, 'Library', currentIndex, context),
-              _buildNavItem(1, Icons.notifications, Icons.notifications_none, 'Updates', currentIndex, context),
-              _buildNavItem(2, Icons.person, Icons.person_outline, 'Profile', currentIndex, context),
-            ],
+          boxShadow: [
+            BoxShadow(
+              color: Color(0x0A000000),
+              blurRadius: 16,
+              offset: Offset(0, -4),
+            ),
+          ],
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildTabItem(0, Icons.my_library_books, Icons.my_library_books_outlined, 'Library', currentIndex, context),
+                _buildTabItem(1, Icons.notifications, Icons.notifications_none_outlined, 'Updates', currentIndex, context),
+                _buildTabItem(2, Icons.person, Icons.person_outline, 'Profile', currentIndex, context),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildNavItem(int index, IconData activeIcon, IconData inactiveIcon, String label, int currentIndex, BuildContext context) {
+  Widget _buildTabItem(int index, IconData activeIcon, IconData inactiveIcon, String label, int currentIndex, BuildContext context) {
     final isActive = currentIndex == index;
 
-    return GestureDetector(
-      onTap: () => _onItemTapped(index, context),
-      behavior: HitTestBehavior.opaque,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOutCubic,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isActive ? AppColors.accentBlue.withValues(alpha: 0.15) : Colors.transparent,
-          borderRadius: BorderRadius.circular(24),
-        ),
-        child: Row(
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => _onItemTapped(index, context),
+        behavior: HitTestBehavior.opaque,
+        child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              isActive ? activeIcon : inactiveIcon,
-              color: isActive ? AppColors.accentBlue : AppColors.textMuted,
-              size: 24,
-              shadows: isActive
-                  ? [const Shadow(color: AppColors.accentGlow, blurRadius: 12)]
-                  : null,
-            ),
-            if (isActive) ...[
-              const SizedBox(width: 8),
-              Text(
-                label,
-                style: const TextStyle(
-                  color: AppColors.accentBlue,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
-                ),
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeOut,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+              decoration: BoxDecoration(
+                color: isActive ? AppColors.accentBlue.withValues(alpha: 0.1) : Colors.transparent,
+                borderRadius: BorderRadius.circular(20),
               ),
-            ],
+              child: Icon(
+                isActive ? activeIcon : inactiveIcon,
+                color: isActive ? AppColors.accentBlue : AppColors.textMuted,
+                size: 24,
+              ),
+            ),
+            const SizedBox(height: 2),
+            AnimatedDefaultTextStyle(
+              duration: const Duration(milliseconds: 200),
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: isActive ? FontWeight.w700 : FontWeight.w400,
+                color: isActive ? AppColors.accentBlue : AppColors.textMuted,
+              ),
+              child: Text(label),
+            ),
           ],
         ),
       ),

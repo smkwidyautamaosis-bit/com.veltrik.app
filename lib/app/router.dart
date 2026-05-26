@@ -21,6 +21,7 @@ import '../features/admin/screens/admin_content_screen.dart';
 import '../features/admin/screens/admin_upload_pdf_screen.dart';
 import '../features/admin/screens/admin_notifications_screen.dart';
 import '../features/admin/screens/admin_creator_editor_screen.dart';
+import '../features/admin/screens/admin_banners_screen.dart';
 
 import 'widgets/scaffold_with_nav_bar.dart';
 
@@ -109,6 +110,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/admin/creator',
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const AdminCreatorEditorScreen(),
+      ),
+      GoRoute(
+        path: '/admin/banners',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const AdminBannersScreen(),
       ),
       ShellRoute(
         navigatorKey: _shellNavigatorKey,

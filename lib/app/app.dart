@@ -13,7 +13,7 @@ class VeltrikApp extends ConsumerWidget {
 
     return MaterialApp.router(
       title: AppConstants.appName,
-      theme: AppTheme.darkTheme,
+      theme: AppTheme.lightTheme,
       routerConfig: router,
       debugShowCheckedModeBanner: false,
     );

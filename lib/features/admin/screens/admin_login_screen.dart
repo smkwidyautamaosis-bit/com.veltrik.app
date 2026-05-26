@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../app/theme/app_colors.dart';
-import '../../../app/widgets/geometric_background.dart';
 
 class AdminLoginScreen extends StatefulWidget {
   const AdminLoginScreen({super.key});
@@ -12,6 +12,7 @@ class AdminLoginScreen extends StatefulWidget {
 
 class _AdminLoginScreenState extends State<AdminLoginScreen> {
   final _pinController = TextEditingController();
+  bool _obscure = true;
 
   void _login() {
     if (_pinController.text == '7777') {
@@ -26,60 +27,64 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: AppColors.bgSurface,
       appBar: AppBar(
-        title: const Text('Admin Access'),
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.bgPrimary,
         elevation: 0,
+        title: Text('Admin Access', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
       ),
-      body: GeometricBackground(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: AppColors.bgElevated,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(color: AppColors.accentBlue.withValues(alpha: 0.2), blurRadius: 20)
-                  ],
-                ),
-                child: const Icon(Icons.shield, size: 80, color: AppColors.accentBlue),
+      body: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: AppColors.accentBlue.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
               ),
-              const SizedBox(height: 48),
-              TextField(
-                controller: _pinController,
-                keyboardType: TextInputType.number,
-                obscureText: true,
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 24, letterSpacing: 8, fontWeight: FontWeight.bold),
-                decoration: InputDecoration(
-                  hintText: '••••',
-                  hintStyle: const TextStyle(letterSpacing: 8),
-                  filled: true,
-                  fillColor: AppColors.bgElevated,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-                ),
-                onSubmitted: (_) => _login(),
-              ),
-              const SizedBox(height: 32),
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.accentBlue,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  ),
-                  onPressed: _login,
-                  child: const Text('Access Dashboard', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+              child: const Icon(Icons.shield_rounded, size: 72, color: AppColors.accentBlue),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Admin Panel',
+              style: GoogleFonts.plusJakartaSans(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Masukkan PIN untuk melanjutkan',
+              style: GoogleFonts.plusJakartaSans(fontSize: 13, color: AppColors.textSecond),
+            ),
+            const SizedBox(height: 48),
+            TextField(
+              controller: _pinController,
+              keyboardType: TextInputType.number,
+              obscureText: _obscure,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.plusJakartaSans(fontSize: 24, letterSpacing: 8, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+              decoration: InputDecoration(
+                hintText: '••••',
+                hintStyle: GoogleFonts.plusJakartaSans(letterSpacing: 8, color: AppColors.textMuted, fontSize: 24),
+                fillColor: AppColors.bgPrimary,
+                filled: true,
+                suffixIcon: IconButton(
+                  icon: Icon(_obscure ? Icons.visibility_off_outlined : Icons.visibility_outlined, color: AppColors.textMuted),
+                  onPressed: () => setState(() => _obscure = !_obscure),
                 ),
               ),
-            ],
-          ),
+              onSubmitted: (_) => _login(),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: ElevatedButton(
+                onPressed: _login,
+                child: Text('Masuk ke Dashboard', style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
+              ),
+            ),
+          ],
         ),
       ),
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../core/services/supabase_service.dart';
 
@@ -73,39 +74,60 @@ class _AdminCreateUserScreenState extends State<AdminCreateUserScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Generate Invite Code')),
+      backgroundColor: AppColors.bgSurface,
+      appBar: AppBar(
+        backgroundColor: AppColors.bgPrimary,
+        elevation: 0,
+        title: Text('Buat User Baru', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
+      ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Generate an invite code and pre-register a user. They can use this code to log in directly.',
-              style: TextStyle(color: AppColors.textMuted),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: AppColors.accentBlue.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.accentBlue.withValues(alpha: 0.2)),
+              ),
+              child: Row(children: [
+                const Icon(Icons.info_outline_rounded, color: AppColors.accentBlue, size: 18),
+                const SizedBox(width: 10),
+                Expanded(child: Text('Kode undangan akan digenerate secara otomatis dan dapat digunakan user untuk masuk.', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.accentBlue))),
+              ]),
             ),
             const SizedBox(height: 24),
+            Text('Nama Lengkap *', style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecond)),
+            const SizedBox(height: 8),
             TextField(
               controller: _nameController,
-              decoration: const InputDecoration(labelText: 'Full Name *'),
+              decoration: const InputDecoration(hintText: 'Nama lengkap member...'),
             ),
             const SizedBox(height: 16),
+            Text('Email (Opsional)', style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecond)),
+            const SizedBox(height: 8),
             TextField(
               controller: _emailController,
-              decoration: const InputDecoration(labelText: 'Email (Optional)'),
+              decoration: const InputDecoration(hintText: 'email@example.com'),
             ),
             const SizedBox(height: 16),
+            Text('Durasi Keanggotaan', style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecond)),
+            const SizedBox(height: 8),
             InputDecorator(
-              decoration: const InputDecoration(labelText: 'Membership Duration'),
+              decoration: const InputDecoration(contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 4)),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<int>(
                   value: _expiresDays,
                   isDense: true,
+                  style: GoogleFonts.plusJakartaSans(fontSize: 14, color: AppColors.textPrimary),
                   items: const [
-                    DropdownMenuItem(value: 30, child: Text('1 Month (30 Days)')),
-                    DropdownMenuItem(value: 90, child: Text('3 Months (90 Days)')),
-                    DropdownMenuItem(value: 180, child: Text('6 Months (180 Days)')),
-                    DropdownMenuItem(value: 365, child: Text('1 Year (365 Days)')),
-                    DropdownMenuItem(value: 730, child: Text('2 Years (730 Days)')),
+                    DropdownMenuItem(value: 30, child: Text('1 Bulan (30 Hari)')),
+                    DropdownMenuItem(value: 90, child: Text('3 Bulan (90 Hari)')),
+                    DropdownMenuItem(value: 180, child: Text('6 Bulan (180 Hari)')),
+                    DropdownMenuItem(value: 365, child: Text('1 Tahun (365 Hari)')),
+                    DropdownMenuItem(value: 730, child: Text('2 Tahun (730 Hari)')),
                   ],
                   onChanged: (value) {
                     if (value != null) {
@@ -118,31 +140,43 @@ class _AdminCreateUserScreenState extends State<AdminCreateUserScreen> {
             const SizedBox(height: 32),
             SizedBox(
               width: double.infinity,
-              height: 50,
+              height: 52,
               child: ElevatedButton(
                 onPressed: _isLoading ? null : _generate,
-                child: _isLoading ? const CircularProgressIndicator() : const Text('Generate Code'),
+                child: _isLoading
+                    ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white))
+                    : Text('Generate Kode Undangan', style: GoogleFonts.plusJakartaSans(fontSize: 15, fontWeight: FontWeight.w700, color: Colors.white)),
               ),
             ),
             if (_generatedCode != null) ...[
-              const SizedBox(height: 48),
-              const Center(child: Text('Generated Code:', style: TextStyle(color: AppColors.textMuted))),
-              const SizedBox(height: 8),
-              Center(
-                child: SelectableText(
-                  _generatedCode!, 
-                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, letterSpacing: 2)
-                )
-              ),
-              const SizedBox(height: 16),
-              Center(
-                child: OutlinedButton.icon(
-                  icon: const Icon(Icons.copy),
-                  label: const Text('Copy to Clipboard'),
-                  onPressed: () {
-                    Clipboard.setData(ClipboardData(text: _generatedCode!));
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Copied!')));
-                  },
+              const SizedBox(height: 32),
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: AppColors.success.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.success.withValues(alpha: 0.3)),
+                ),
+                child: Column(
+                  children: [
+                    const Icon(Icons.check_circle_rounded, color: AppColors.success, size: 40),
+                    const SizedBox(height: 12),
+                    Text('Kode berhasil digenerate!', style: GoogleFonts.plusJakartaSans(fontSize: 14, color: AppColors.success, fontWeight: FontWeight.w600)),
+                    const SizedBox(height: 12),
+                    SelectableText(
+                      _generatedCode!, 
+                      style: GoogleFonts.plusJakartaSans(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.textPrimary, letterSpacing: 2)
+                    ),
+                    const SizedBox(height: 16),
+                    OutlinedButton.icon(
+                      icon: const Icon(Icons.copy_rounded, size: 18),
+                      label: Text('Salin Kode', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600)),
+                      onPressed: () {
+                        Clipboard.setData(ClipboardData(text: _generatedCode!));
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Kode disalin!')));
+                      },
+                    ),
+                  ],
                 ),
               ),
             ]

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../core/services/supabase_service.dart';
 
@@ -56,14 +57,14 @@ class _AdminContentScreenState extends State<AdminContentScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgPrimary,
+      backgroundColor: AppColors.bgSurface,
       appBar: AppBar(
-        title: const Text('Manage Content'),
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.bgPrimary,
         elevation: 0,
+        title: Text('Manage Content', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
         actions: [
           IconButton(
-            icon: const Icon(Icons.upload_file, color: AppColors.accentBlue), 
+            icon: const Icon(Icons.upload_file_rounded, color: AppColors.accentBlue), 
             onPressed: () => context.push('/admin/content/upload').then((_) => _fetchDocs())
           ),
         ],
@@ -81,39 +82,43 @@ class _AdminContentScreenState extends State<AdminContentScreen> {
                 final sizeKb = doc['file_size_kb'];
                 final sizeStr = sizeKb != null ? "${(sizeKb / 1024).toStringAsFixed(2)} MB" : '';
                 
-                return Card(
+                return Container(
                   margin: const EdgeInsets.only(bottom: 12),
-                  color: AppColors.bgElevated,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  decoration: BoxDecoration(
+                    color: AppColors.bgCard,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AppColors.border),
+                    boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2))],
+                  ),
                   child: ListTile(
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     leading: Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: AppColors.bgPrimary,
+                        color: AppColors.accentBlue.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Icon(Icons.picture_as_pdf, color: AppColors.accentBlue),
+                      child: const Icon(Icons.picture_as_pdf_rounded, color: AppColors.accentBlue),
                     ),
-                    title: Text(doc['title'], style: const TextStyle(fontWeight: FontWeight.bold)),
+                    title: Text(doc['title'], style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: 4),
-                        Text(doc['file_path'], style: const TextStyle(color: AppColors.textSecond, fontSize: 12)),
+                        Text(doc['file_path'], style: GoogleFonts.plusJakartaSans(color: AppColors.textSecond, fontSize: 12)),
                         const SizedBox(height: 8),
                         Row(
                           children: [
                             if (dateStr.isNotEmpty) ...[
-                              const Icon(Icons.calendar_today, size: 12, color: AppColors.textMuted),
+                              const Icon(Icons.calendar_today_outlined, size: 12, color: AppColors.textMuted),
                               const SizedBox(width: 4),
-                              Text(dateStr, style: const TextStyle(color: AppColors.textMuted, fontSize: 12)),
+                              Text(dateStr, style: GoogleFonts.plusJakartaSans(color: AppColors.textMuted, fontSize: 12)),
                               const SizedBox(width: 12),
                             ],
                             if (sizeStr.isNotEmpty) ...[
-                              const Icon(Icons.storage, size: 12, color: AppColors.textMuted),
+                              const Icon(Icons.storage_outlined, size: 12, color: AppColors.textMuted),
                               const SizedBox(width: 4),
-                              Text(sizeStr, style: const TextStyle(color: AppColors.textMuted, fontSize: 12)),
+                              Text(sizeStr, style: GoogleFonts.plusJakartaSans(color: AppColors.textMuted, fontSize: 12)),
                             ],
                           ],
                         ),
@@ -122,9 +127,8 @@ class _AdminContentScreenState extends State<AdminContentScreen> {
                     trailing: Switch(
                       value: isActive,
                       onChanged: (val) => _toggleActive(doc['id'], isActive),
-                      activeThumbColor: AppColors.success,
-                      inactiveThumbColor: AppColors.textMuted,
-                      inactiveTrackColor: AppColors.bgPrimary,
+                      activeTrackColor: AppColors.success,
+                      thumbColor: WidgetStateProperty.all(Colors.white),
                     ),
                   ),
                 );

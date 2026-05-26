@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as p;
+import 'package:google_fonts/google_fonts.dart';
+import '../../../app/theme/app_colors.dart';
 import '../../../core/constants/supabase_constants.dart';
 import '../../../core/services/supabase_service.dart';
 
@@ -88,26 +90,69 @@ class _AdminUploadPdfScreenState extends State<AdminUploadPdfScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Upload PDF')),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
+      backgroundColor: AppColors.bgSurface,
+      appBar: AppBar(
+        backgroundColor: AppColors.bgPrimary,
+        elevation: 0,
+        title: Text('Upload PDF', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextField(controller: _titleController, decoration: const InputDecoration(labelText: 'Title')),
+            Text('Judul Dokumen', style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecond)),
+            const SizedBox(height: 8),
+            TextField(controller: _titleController, decoration: const InputDecoration(hintText: 'Judul dokumen...')),
             const SizedBox(height: 16),
-            TextField(controller: _descController, decoration: const InputDecoration(labelText: 'Description'), maxLines: 3),
-            const SizedBox(height: 24),
-            OutlinedButton.icon(
-              icon: const Icon(Icons.attach_file),
-              label: Text(_selectedFile != null ? p.basename(_selectedFile!.path) : 'Select PDF File'),
-              onPressed: _pickFile,
+            Text('Deskripsi', style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecond)),
+            const SizedBox(height: 8),
+            TextField(controller: _descController, decoration: const InputDecoration(hintText: 'Deskripsi singkat...'), maxLines: 3),
+            const SizedBox(height: 20),
+            GestureDetector(
+              onTap: _pickFile,
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+                decoration: BoxDecoration(
+                  color: AppColors.bgPrimary,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: _selectedFile != null ? AppColors.accentBlue : AppColors.border,
+                    width: _selectedFile != null ? 2 : 1,
+                    strokeAlign: BorderSide.strokeAlignInside,
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Icon(
+                      _selectedFile != null ? Icons.picture_as_pdf_rounded : Icons.upload_file_rounded,
+                      color: _selectedFile != null ? AppColors.accentBlue : AppColors.textMuted,
+                      size: 40,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      _selectedFile != null ? p.basename(_selectedFile!.path) : 'Tap untuk pilih file PDF',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 13,
+                        color: _selectedFile != null ? AppColors.accentBlue : AppColors.textMuted,
+                        fontWeight: _selectedFile != null ? FontWeight.w600 : FontWeight.w400,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
             ),
             const Spacer(),
             SizedBox(
               width: double.infinity,
+              height: 52,
               child: ElevatedButton(
                 onPressed: _isUploading ? null : _upload,
-                child: _isUploading ? const CircularProgressIndicator() : const Text('Upload Document'),
+                child: _isUploading
+                    ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white))
+                    : Text('Upload Dokumen', style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
               ),
             ),
           ],

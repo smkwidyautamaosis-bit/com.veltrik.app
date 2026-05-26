@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../app/theme/app_colors.dart';
-import '../../../app/theme/app_text_styles.dart';
 import '../../auth/providers/auth_provider.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -13,12 +13,13 @@ class ProfileScreen extends ConsumerWidget {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: AppColors.bgCard,
-        title: const Text('Keluar Aplikasi', style: AppTextStyles.h2),
-        content: const Text('Apakah Anda yakin ingin keluar?', style: AppTextStyles.bodyRegular),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text('Keluar Aplikasi', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
+        content: Text('Apakah Anda yakin ingin keluar?', style: GoogleFonts.plusJakartaSans(color: AppColors.textSecond)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Batal', style: TextStyle(color: AppColors.textSecond)),
+            child: Text('Batal', style: GoogleFonts.plusJakartaSans(color: AppColors.textSecond, fontWeight: FontWeight.w600)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.danger),
@@ -27,7 +28,7 @@ class ProfileScreen extends ConsumerWidget {
               ref.read(authProvider.notifier).logout();
               context.go('/login');
             },
-            child: const Text('Keluar'),
+            child: Text('Keluar', style: GoogleFonts.plusJakartaSans(color: Colors.white, fontWeight: FontWeight.w600)),
           ),
         ],
       ),
@@ -45,7 +46,6 @@ class ProfileScreen extends ConsumerWidget {
     if (user != null) {
       daysLeft = user.expiresAt.difference(DateTime.now()).inDays;
       if (daysLeft < 0) daysLeft = 0;
-      
       progress = (daysLeft / 365).clamp(0.0, 1.0);
       
       if (daysLeft <= 7) {
@@ -58,112 +58,144 @@ class ProfileScreen extends ConsumerWidget {
     }
 
     return Scaffold(
+      backgroundColor: AppColors.bgSurface,
       appBar: AppBar(
-        title: const Text('Profil'),
+        backgroundColor: AppColors.bgPrimary,
         elevation: 0,
-        backgroundColor: Colors.transparent,
+        centerTitle: false,
+        title: Text(
+          'Profil',
+          style: GoogleFonts.plusJakartaSans(fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+        ),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
         children: [
           // Profile Card
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: AppColors.bgElevated,
+              color: AppColors.bgCard,
               borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: AppColors.border),
               boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.2),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
+                BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 16, offset: const Offset(0, 4)),
               ],
             ),
             child: Column(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: const BoxDecoration(
-                    color: AppColors.accentBlue,
+                  padding: const EdgeInsets.all(3),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [AppColors.accentBlue, AppColors.accentRoyal],
+                    ),
                     shape: BoxShape.circle,
                   ),
-                  child: const CircleAvatar(
+                  child: CircleAvatar(
                     radius: 40,
-                    backgroundColor: AppColors.bgPrimary,
-                    child: Icon(Icons.person, size: 40, color: AppColors.accentBlue),
+                    backgroundColor: AppColors.bgSurface,
+                    child: Icon(Icons.person_rounded, size: 40, color: AppColors.accentBlue),
                   ),
                 ),
                 const SizedBox(height: 16),
-                Text(user?.fullName ?? 'Member', style: AppTextStyles.h2),
+                Text(
+                  user?.fullName ?? 'Member',
+                  style: GoogleFonts.plusJakartaSans(fontSize: 20, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                ),
                 const SizedBox(height: 4),
-                Text(user?.inviteCode ?? 'VLTK-XXXX-XXXX', style: AppTextStyles.code),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppColors.accentBlue.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    user?.inviteCode ?? 'VLTK-XXXX-XXXX',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.accentBlue,
+                      letterSpacing: 1.5,
+                    ),
+                  ),
+                ),
                 if (user?.email != null) ...[
                   const SizedBox(height: 8),
-                  Text(user!.email!, style: AppTextStyles.caption.copyWith(color: AppColors.textSecond)),
+                  Text(user!.email!, style: GoogleFonts.plusJakartaSans(fontSize: 13, color: AppColors.textSecond)),
                 ],
                 const SizedBox(height: 24),
-                
+                const Divider(color: AppColors.border),
+                const SizedBox(height: 16),
                 // Progress Bar
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text('Sisa Masa Aktif', style: AppTextStyles.caption),
-                        Text('$daysLeft Hari', style: TextStyle(color: progressColor, fontWeight: FontWeight.bold)),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: LinearProgressIndicator(
-                        value: progress,
-                        minHeight: 8,
-                        backgroundColor: AppColors.bgPrimary,
-                        valueColor: AlwaysStoppedAnimation<Color>(progressColor),
+                    Text('Masa Aktif', style: GoogleFonts.plusJakartaSans(fontSize: 13, color: AppColors.textSecond)),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: progressColor.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        '$daysLeft Hari',
+                        style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w700, color: progressColor),
                       ),
                     ),
                   ],
                 ),
+                const SizedBox(height: 10),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: LinearProgressIndicator(
+                    value: progress,
+                    minHeight: 8,
+                    backgroundColor: AppColors.border,
+                    valueColor: AlwaysStoppedAnimation<Color>(progressColor),
+                  ),
+                ),
               ],
             ),
           ),
-          
-          const SizedBox(height: 24),
-          
+
+          const SizedBox(height: 16),
+
           // Device Binding Card
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppColors.bgElevated,
+              color: AppColors.bgCard,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.borderLight),
+              border: Border.all(color: AppColors.border),
+              boxShadow: [
+                BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2)),
+              ],
             ),
             child: Row(
               children: [
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: AppColors.bgPrimary,
+                    color: (user?.deviceId != null ? AppColors.success : AppColors.textMuted).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
-                    user?.deviceId != null ? Icons.lock : Icons.lock_open,
+                    user?.deviceId != null ? Icons.lock_rounded : Icons.lock_open_rounded,
                     color: user?.deviceId != null ? AppColors.success : AppColors.textMuted,
+                    size: 20,
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 14),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Device Binding', style: AppTextStyles.bodyEmphasis),
-                      const SizedBox(height: 4),
+                      Text('Device Binding', style: GoogleFonts.plusJakartaSans(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
+                      const SizedBox(height: 2),
                       Text(
                         user?.deviceName ?? 'Belum ada device yang terikat',
-                        style: AppTextStyles.caption.copyWith(color: AppColors.textSecond),
+                        style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppColors.textSecond),
                       ),
                     ],
                   ),
@@ -171,32 +203,50 @@ class ProfileScreen extends ConsumerWidget {
               ],
             ),
           ),
-          
-          const SizedBox(height: 32),
-          const Text('Menu', style: AppTextStyles.bodyEmphasis),
-          const SizedBox(height: 16),
-          
+
+          const SizedBox(height: 24),
+          Text('Menu', style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.textMuted, letterSpacing: 0.5)),
+          const SizedBox(height: 10),
+
           // Menu List
           Container(
             decoration: BoxDecoration(
-              color: AppColors.bgElevated,
+              color: AppColors.bgCard,
               borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppColors.border),
+              boxShadow: [
+                BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2)),
+              ],
             ),
             child: Column(
               children: [
                 ListTile(
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                  leading: const Icon(Icons.info_outline, color: AppColors.accentBlue),
-                  title: const Text('Tentang Kreator', style: AppTextStyles.bodyRegular),
-                  trailing: const Icon(Icons.chevron_right, color: AppColors.textMuted),
+                  leading: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColors.accentBlue.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(Icons.info_outline_rounded, color: AppColors.accentBlue, size: 20),
+                  ),
+                  title: Text('Tentang Kreator', style: GoogleFonts.plusJakartaSans(fontSize: 14, color: AppColors.textPrimary, fontWeight: FontWeight.w500)),
+                  trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.textMuted),
                   onTap: () => context.push('/creator'),
                 ),
-                const Divider(height: 1, color: AppColors.borderLight, indent: 16, endIndent: 16),
+                const Divider(height: 1, indent: 16, endIndent: 16, color: AppColors.border),
                 ListTile(
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                  leading: const Icon(Icons.logout, color: AppColors.danger),
-                  title: const Text('Keluar', style: TextStyle(color: AppColors.danger, fontSize: 16)),
-                  trailing: const Icon(Icons.chevron_right, color: AppColors.textMuted),
+                  leading: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColors.danger.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(Icons.logout_rounded, color: AppColors.danger, size: 20),
+                  ),
+                  title: Text('Keluar', style: GoogleFonts.plusJakartaSans(fontSize: 14, color: AppColors.danger, fontWeight: FontWeight.w500)),
+                  trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.textMuted),
                   onTap: () => _confirmLogout(context, ref),
                 ),
               ],
