@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../core/services/supabase_service.dart';
+import '../../../core/utils/date_utils.dart';
 
 class AdminCreateUserScreen extends StatefulWidget {
   const AdminCreateUserScreen({super.key});
@@ -17,6 +19,8 @@ class _AdminCreateUserScreenState extends State<AdminCreateUserScreen> {
   int _expiresDays = 365;
   bool _isLoading = false;
   String? _generatedCode;
+  String? _generatedName;
+  String? _expiresAt;
 
   Future<void> _generate() async {
     if (_nameController.text.trim().isEmpty) {
@@ -44,6 +48,10 @@ class _AdminCreateUserScreenState extends State<AdminCreateUserScreen> {
         if (data != null && data['success'] == true) {
           setState(() {
             _generatedCode = data['invite_code'];
+            _generatedName = _nameController.text.trim();
+            // Compute expires_at from expires_days
+            final expiresDate = DateTime.now().add(Duration(days: _expiresDays));
+            _expiresAt = AppDateUtils.toWIBDateOnly(expiresDate);
             _nameController.clear();
             _emailController.clear();
           });
@@ -175,6 +183,31 @@ class _AdminCreateUserScreenState extends State<AdminCreateUserScreen> {
                         Clipboard.setData(ClipboardData(text: _generatedCode!));
                         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Kode disalin!')));
                       },
+                    ),
+                    const SizedBox(height: 12),
+                    // Veltrik Pass Button
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF2563EB),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                        icon: const Icon(Icons.credit_card_rounded, size: 20),
+                        label: Text(
+                          'Generate Veltrik Pass',
+                          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 14),
+                        ),
+                        onPressed: () {
+                          context.push('/admin/veltrik-pass', extra: {
+                            'memberName': _generatedName ?? '',
+                            'inviteCode': _generatedCode ?? '',
+                            'expiresAt': _expiresAt ?? '',
+                          });
+                        },
+                      ),
                     ),
                   ],
                 ),

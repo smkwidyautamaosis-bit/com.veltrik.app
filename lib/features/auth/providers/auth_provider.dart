@@ -61,6 +61,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
     await AuthService.instance.logout();
     state = state.copyWith(status: AuthStatus.unauthenticated, user: null);
   }
+
+  void updateAvatarUrl(String url) {
+    if (state.user != null) {
+      state = state.copyWith(user: state.user!.copyWith(avatarUrl: url));
+    }
+  }
 }
 
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {

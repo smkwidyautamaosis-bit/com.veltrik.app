@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../app/theme/app_colors.dart';
+import '../../../core/utils/date_utils.dart';
 import '../providers/documents_provider.dart';
 import '../widgets/banner_carousel.dart';
 
@@ -36,24 +36,30 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
         backgroundColor: AppColors.bgPrimary,
         elevation: 0,
         centerTitle: false,
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        title: Row(
           children: [
-            Text(
-              'Selamat Datang 👋',
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                color: AppColors.textSecond,
-              ),
-            ),
-            Text(
-              'Library Veltrik',
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
-              ),
+            Image.asset('assets/images/logo.png', height: 30),
+            const SizedBox(width: 10),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Selamat Datang',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.textSecond,
+                  ),
+                ),
+                Text(
+                  'Library Veltrik',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -61,12 +67,16 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
           Container(
             margin: const EdgeInsets.only(right: 16, top: 8, bottom: 8),
             decoration: BoxDecoration(
-              color: AppColors.bgSurface,
+              color: AppColors.accentBlue.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.border),
+              border: Border.all(color: AppColors.accentBlue.withValues(alpha: 0.3)),
             ),
             child: IconButton(
-              icon: const Icon(Icons.notifications_none, color: AppColors.textSecond, size: 22),
+              icon: const Icon(
+                Icons.notifications_rounded,
+                color: AppColors.accentBlue,
+                size: 22,
+              ),
               onPressed: () => context.go('/app/updates'),
               padding: const EdgeInsets.all(6),
               constraints: const BoxConstraints(),
@@ -85,11 +95,15 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                 decoration: BoxDecoration(
                   color: AppColors.bgSurface,
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppColors.border),
+                  border: Border.all(color: AppColors.accentBlue.withValues(alpha: 0.25)),
+                  boxShadow: [
+                    BoxShadow(color: AppColors.accentBlue.withValues(alpha: 0.06), blurRadius: 8, offset: const Offset(0, 2)),
+                  ],
                 ),
                 child: TextField(
                   controller: _searchController,
-                  onChanged: (val) => setState(() => _searchQuery = val.toLowerCase()),
+                  onChanged: (val) =>
+                      setState(() => _searchQuery = val.toLowerCase()),
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 14,
                     color: AppColors.textPrimary,
@@ -104,10 +118,18 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                       fontSize: 14,
                       color: AppColors.textMuted,
                     ),
-                    prefixIcon: const Icon(Icons.search_rounded, color: AppColors.textMuted, size: 22),
+                    prefixIcon: const Icon(
+                      Icons.search_rounded,
+                      color: AppColors.accentBlue,
+                      size: 22,
+                    ),
                     suffixIcon: _searchQuery.isNotEmpty
                         ? IconButton(
-                            icon: const Icon(Icons.clear, color: AppColors.textMuted, size: 18),
+                            icon: const Icon(
+                              Icons.clear,
+                              color: AppColors.textMuted,
+                              size: 18,
+                            ),
                             onPressed: () {
                               _searchController.clear();
                               setState(() => _searchQuery = '');
@@ -144,26 +166,33 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                       color: AppColors.textPrimary,
                     ),
                   ),
-                  docsAsyncValue.whenData(
-                    (docs) {
-                      final count = docs.where((d) => d.title.toLowerCase().contains(_searchQuery)).length;
-                      return Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: AppColors.accentBlue.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          '$count Dokumen',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.accentBlue,
+                  docsAsyncValue.whenData((docs) {
+                        final count = docs
+                            .where(
+                              (d) =>
+                                  d.title.toLowerCase().contains(_searchQuery),
+                            )
+                            .length;
+                        return Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
                           ),
-                        ),
-                      );
-                    },
-                  ).value ?? const SizedBox.shrink(),
+                          decoration: BoxDecoration(
+                            color: AppColors.accentBlue.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            '$count Dokumen',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.accentBlue,
+                            ),
+                          ),
+                        );
+                      }).value ??
+                      const SizedBox.shrink(),
                 ],
               ),
             ),
@@ -172,7 +201,9 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
           // Document List
           docsAsyncValue.when(
             data: (docs) {
-              final filteredDocs = docs.where((d) => d.title.toLowerCase().contains(_searchQuery)).toList();
+              final filteredDocs = docs
+                  .where((d) => d.title.toLowerCase().contains(_searchQuery))
+                  .toList();
 
               if (filteredDocs.isEmpty) {
                 return SliverFillRemaining(
@@ -186,7 +217,11 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                             color: AppColors.border.withValues(alpha: 0.5),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.menu_book_outlined, size: 48, color: AppColors.textMuted),
+                          child: const Icon(
+                            Icons.menu_book_outlined,
+                            size: 48,
+                            color: AppColors.textMuted,
+                          ),
                         ),
                         const SizedBox(height: 16),
                         Text(
@@ -211,170 +246,202 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                   ),
                 );
               }
-
               return SliverPadding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
                 sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      final doc = filteredDocs[index];
-                      final isNew = DateTime.now().difference(doc.createdAt).inDays < 3;
-                      final dateStr = DateFormat('dd MMM yyyy').format(doc.createdAt);
+                  delegate: SliverChildBuilderDelegate((context, index) {
+                    final doc = filteredDocs[index];
+                    final isNew =
+                        DateTime.now().difference(doc.createdAt).inDays < 3;
+                    final dateStr = AppDateUtils.toWIBDateOnly(doc.createdAt);
 
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 16),
-                        decoration: BoxDecoration(
-                          color: AppColors.bgCard,
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 16),
+                      decoration: BoxDecoration(
+                        color: AppColors.bgCard,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: AppColors.border, width: 0.5),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.06),
+                            blurRadius: 16,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        borderRadius: BorderRadius.circular(20),
+                        child: InkWell(
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: AppColors.border, width: 0.5),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.06),
-                              blurRadius: 16,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: Material(
-                          color: Colors.transparent,
-                          borderRadius: BorderRadius.circular(20),
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(20),
-                            onTap: () => context.push('/pdf-viewer/${doc.id}', extra: doc.title),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                // Thumbnail
-                                ClipRRect(
-                                  borderRadius: const BorderRadius.only(
-                                    topLeft: Radius.circular(20),
-                                    topRight: Radius.circular(20),
-                                  ),
-                                  child: SizedBox(
-                                    height: 180,
-                                    width: double.infinity,
-                                    child: Stack(
-                                      fit: StackFit.expand,
-                                      children: [
-                                        doc.thumbnailUrl != null && doc.thumbnailUrl!.isNotEmpty
-                                            ? CachedNetworkImage(
-                                                imageUrl: doc.thumbnailUrl!,
-                                                fit: BoxFit.cover,
-                                                placeholder: (context, url) => Shimmer.fromColors(
-                                                  baseColor: AppColors.border,
-                                                  highlightColor: AppColors.bgSurface,
-                                                  child: Container(color: Colors.white),
-                                                ),
-                                                errorWidget: (context, url, error) => Image.asset(
-                                                  'assets/images/placeholder.png',
-                                                  fit: BoxFit.cover,
-                                                ),
-                                              )
-                                            : Image.asset(
-                                                'assets/images/placeholder.png',
-                                                fit: BoxFit.cover,
-                                              ),
-                                        if (isNew)
-                                          Positioned(
-                                            top: 12,
-                                            left: 12,
-                                            child: Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                              decoration: BoxDecoration(
-                                                color: AppColors.accentBlue,
-                                                borderRadius: BorderRadius.circular(20),
-                                              ),
-                                              child: Text(
-                                                'Baru',
-                                                style: GoogleFonts.plusJakartaSans(
-                                                  fontSize: 10,
-                                                  fontWeight: FontWeight.w700,
-                                                  color: Colors.white,
-                                                ),
-                                              ),
+                          onTap: () => context.push(
+                            '/pdf-viewer/${doc.id}',
+                            extra: doc.title,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              // Thumbnail
+                              ClipRRect(
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(20),
+                                  topRight: Radius.circular(20),
+                                ),
+                                child: SizedBox(
+                                  height: 180,
+                                  width: double.infinity,
+                                  child: Stack(
+                                    fit: StackFit.expand,
+                                    children: [
+                                      doc.thumbnailUrl != null &&
+                                              doc.thumbnailUrl!.isNotEmpty
+                                          ? CachedNetworkImage(
+                                              imageUrl: doc.thumbnailUrl!,
+                                              fit: BoxFit.cover,
+                                              placeholder: (context, url) =>
+                                                  Shimmer.fromColors(
+                                                    baseColor: AppColors.border,
+                                                    highlightColor:
+                                                        AppColors.bgSurface,
+                                                    child: Container(
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                              errorWidget:
+                                                  (
+                                                    context,
+                                                    url,
+                                                    error,
+                                                  ) => Image.asset(
+                                                    'assets/images/placeholder.png',
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                            )
+                                          : Image.asset(
+                                              'assets/images/placeholder.png',
+                                              fit: BoxFit.cover,
+                                            ),
+                                      if (isNew)
+                                        Positioned(
+                                          top: 12,
+                                          left: 12,
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 10,
+                                              vertical: 4,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: AppColors.accentBlue,
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                            ),
+                                            child: Text(
+                                              'Baru',
+                                              style:
+                                                  GoogleFonts.plusJakartaSans(
+                                                    fontSize: 10,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: Colors.white,
+                                                  ),
                                             ),
                                           ),
-                                      ],
-                                    ),
+                                        ),
+                                    ],
                                   ),
                                 ),
+                              ),
 
-                                // Content
-                                Padding(
-                                  padding: const EdgeInsets.all(16),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
+                              // Content
+                              Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      doc.title,
+                                      style: GoogleFonts.plusJakartaSans(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
+                                        color: AppColors.textPrimary,
+                                      ),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    if (doc.description != null) ...[
+                                      const SizedBox(height: 6),
                                       Text(
-                                        doc.title,
+                                        doc.description!,
                                         style: GoogleFonts.plusJakartaSans(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w700,
-                                          color: AppColors.textPrimary,
+                                          fontSize: 13,
+                                          color: AppColors.textSecond,
                                         ),
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
                                       ),
-                                      if (doc.description != null) ...[
-                                        const SizedBox(height: 6),
-                                        Text(
-                                          doc.description!,
-                                          style: GoogleFonts.plusJakartaSans(
-                                            fontSize: 13,
-                                            color: AppColors.textSecond,
+                                    ],
+                                    const SizedBox(height: 12),
+                                    Row(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                            vertical: 4,
                                           ),
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
+                                          decoration: BoxDecoration(
+                                            color: AppColors.accentBlue
+                                                .withValues(alpha: 0.08),
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              const Icon(
+                                                Icons.category_outlined,
+                                                size: 12,
+                                                color: AppColors.accentBlue,
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                doc.category.toUpperCase(),
+                                                style:
+                                                    GoogleFonts.plusJakartaSans(
+                                                      fontSize: 11,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      color:
+                                                          AppColors.accentBlue,
+                                                    ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        const Spacer(),
+                                        Icon(
+                                          Icons.calendar_today_outlined,
+                                          size: 12,
+                                          color: AppColors.textMuted,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          dateStr,
+                                          style: GoogleFonts.plusJakartaSans(
+                                            fontSize: 12,
+                                            color: AppColors.textMuted,
+                                          ),
                                         ),
                                       ],
-                                      const SizedBox(height: 12),
-                                      Row(
-                                        children: [
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                            decoration: BoxDecoration(
-                                              color: AppColors.accentBlue.withValues(alpha: 0.08),
-                                              borderRadius: BorderRadius.circular(8),
-                                            ),
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                const Icon(Icons.category_outlined, size: 12, color: AppColors.accentBlue),
-                                                const SizedBox(width: 4),
-                                                Text(
-                                                  doc.category.toUpperCase(),
-                                                  style: GoogleFonts.plusJakartaSans(
-                                                    fontSize: 11,
-                                                    fontWeight: FontWeight.w700,
-                                                    color: AppColors.accentBlue,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          const Spacer(),
-                                          Icon(Icons.calendar_today_outlined, size: 12, color: AppColors.textMuted),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            dateStr,
-                                            style: GoogleFonts.plusJakartaSans(
-                                              fontSize: 12,
-                                              color: AppColors.textMuted,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
-                      );
-                    },
-                    childCount: filteredDocs.length,
-                  ),
+                      ),
+                    );
+                  }, childCount: filteredDocs.length),
                 ),
               );
             },

@@ -4,7 +4,7 @@ import { JWT } from "npm:google-auth-library@9"
 
 serve(async (req) => {
   try {
-    const { title, body, target, user_id, notification_type } = await req.json()
+    const { title, body, target, user_id, notification_type, image_url } = await req.json()
 
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
@@ -61,7 +61,7 @@ serve(async (req) => {
 
       // Send requests concurrently using Promise.all
       const sendPromises = tokens.map(async (token) => {
-        const payload = {
+        const payload: any = {
           message: {
             token: token,
             notification: {
@@ -73,6 +73,10 @@ serve(async (req) => {
               click_action: 'FLUTTER_NOTIFICATION_CLICK',
             }
           }
+        }
+
+        if (image_url) {
+          payload.message.notification.image = image_url
         }
 
         const response = await fetch(fcmUrl, {

@@ -12,6 +12,7 @@ import '../features/library/screens/pdf_viewer_screen.dart';
 import '../features/updates/screens/updates_screen.dart';
 import '../features/profile/screens/profile_screen.dart';
 import '../features/profile/screens/creator_screen.dart';
+import '../features/security/screens/system_status_screen.dart';
 
 import '../features/admin/screens/admin_login_screen.dart';
 import '../features/admin/screens/admin_dashboard_screen.dart';
@@ -22,6 +23,8 @@ import '../features/admin/screens/admin_upload_pdf_screen.dart';
 import '../features/admin/screens/admin_notifications_screen.dart';
 import '../features/admin/screens/admin_creator_editor_screen.dart';
 import '../features/admin/screens/admin_banners_screen.dart';
+import '../features/admin/screens/admin_analytics_screen.dart';
+import '../features/admin/screens/admin_veltrik_pass_screen.dart';
 
 import 'widgets/scaffold_with_nav_bar.dart';
 
@@ -116,6 +119,23 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const AdminBannersScreen(),
       ),
+      GoRoute(
+        path: '/admin/analytics',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const AdminAnalyticsScreen(),
+      ),
+      GoRoute(
+        path: '/admin/veltrik-pass',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          return AdminVeltrikPassScreen(
+            memberName: extra?['memberName'] as String? ?? '',
+            inviteCode: extra?['inviteCode'] as String? ?? '',
+            expiresAt: extra?['expiresAt'] as String? ?? '',
+          );
+        },
+      ),
       ShellRoute(
         navigatorKey: _shellNavigatorKey,
         builder: (context, state, child) {
@@ -129,6 +149,10 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/app/updates',
             pageBuilder: (context, state) => const NoTransitionPage(child: UpdatesScreen()),
+          ),
+          GoRoute(
+            path: '/app/security',
+            pageBuilder: (context, state) => const NoTransitionPage(child: SystemStatusScreen()),
           ),
           GoRoute(
             path: '/app/profile',

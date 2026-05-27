@@ -65,7 +65,9 @@ class _AdminUploadPdfScreenState extends State<AdminUploadPdfScreen> {
             'title': 'Dokumen Baru 📄',
             'body': _titleController.text,
             'target': 'all',
-            'notification_type': 'document'
+            'notification_type': 'document',
+            // FCM requires a public HTTPS URL to display images in Push Notifications.
+            'image_url': 'https://idfmdjtkvvjyqbffjugt.supabase.co/storage/v1/object/public/veltrik-thumbnails/placeholder%20(1).png'
           },
         );
       } catch (e) {

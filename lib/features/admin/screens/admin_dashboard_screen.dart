@@ -175,6 +175,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   crossAxisSpacing: 12,
                   childAspectRatio: 1.1,
                   children: [
+                    _buildMenuCard(context, 'Analytics', 'Statistik pembacaan', Icons.insights_rounded, '/admin/analytics', const Color(0xFFEAB308)),
                     _buildMenuCard(context, 'Users', 'Kelola akun member', Icons.people_rounded, '/admin/users', AppColors.accentBlue),
                     _buildMenuCard(context, 'Konten', 'Upload & atur dokumen', Icons.my_library_books_rounded, '/admin/content', AppColors.success),
                     _buildMenuCard(context, 'Notifikasi', 'Kirim pengumuman', Icons.campaign_rounded, '/admin/notifications', AppColors.warning),

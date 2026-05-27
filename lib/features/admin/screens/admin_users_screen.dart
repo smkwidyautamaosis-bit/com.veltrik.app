@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../core/services/supabase_service.dart';
+import '../../../core/utils/date_utils.dart';
 
 class AdminUsersScreen extends StatefulWidget {
   const AdminUsersScreen({super.key});
@@ -129,7 +130,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
               itemBuilder: (context, index) {
                 final user = _users[index];
                 final expiresAt = user['expires_at'] != null ? DateTime.tryParse(user['expires_at']) : null;
-                final dateStr = expiresAt != null ? "${expiresAt.day}/${expiresAt.month}/${expiresAt.year}" : 'No Expiry';
+                final dateStr = expiresAt != null ? AppDateUtils.toWIBDateOnly(expiresAt) : 'No Expiry';
                 
                 return Container(
                   margin: const EdgeInsets.only(bottom: 12),
@@ -182,6 +183,18 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                                 onPressed: () => _resetDevice(user['id']),
                                 tooltip: 'Reset Device',
                               ),
+                            // Veltrik Pass button
+                            IconButton(
+                              icon: const Icon(Icons.credit_card_rounded, color: Color(0xFF2563EB)),
+                              tooltip: 'Veltrik Pass',
+                              onPressed: () {
+                                context.push('/admin/veltrik-pass', extra: {
+                                  'memberName': user['full_name'] ?? 'Member',
+                                  'inviteCode': user['invite_code'] ?? '',
+                                  'expiresAt': expiresAt != null ? AppDateUtils.toWIBDateOnly(expiresAt) : '',
+                                });
+                              },
+                            ),
                           ],
                         ),
                       ],
